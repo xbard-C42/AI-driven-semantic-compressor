@@ -1,6 +1,15 @@
 {
-  "embedding_dimension": 384,
-  "vqvae_hidden_dim": 128,
-  "vqvae_embedding_dim": 64,
-  "vqvae_num_embeddings": 512
+   "device": "cpu",
+   "dataset_split": "train",
+   "sample_size": 10000,
+   "batch_size": 64,
+   "test_fraction": 0.1,
+   "pq_M": 8,
+   "pq_bits": 8,
+   "embedding_dimension": 384,
+   "vqvae_hidden_dim": 128,
+   "vqvae_embedding_dim": 64,
+   "vqvae_num_embeddings": 512,
+   "vqvae_learning_rate": 0.001,
+   "vqvae_epochs": 10
 }
