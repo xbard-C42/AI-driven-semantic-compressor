@@ -62,6 +62,7 @@ cat > vqvae_config.json << 'EOF'
   "batch_size": 64,
   "test_fraction": 0.1,
   "pq_M": 8,
+  "embedding_dimension": 384,
   "vqvae_hidden_dim": 128,
   "vqvae_embedding_dim": 64,
   "vqvae_num_embeddings": 512,
