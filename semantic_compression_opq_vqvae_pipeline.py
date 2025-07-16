@@ -2,10 +2,13 @@
 """
 Enhanced pipeline combining FAISS OPQ+PQ and a VQ-VAE for semantic compression on Wikitext-2,
 with reproducible training, gradient clipping, visual curve, and export of all test artifacts.
+
 Prerequisites:
-    pip install datasets sentence-transformers numpy torch faiss-cpu scikit-learn pandas matplotlib
+    pip install datasets sentence-transformers numpy torch faiss-cpu scikit-learn pandas matplotlib python-dotenv
 """
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
 import json
 import random
 import numpy as np
@@ -33,19 +36,13 @@ CONFIG = {
     "vqvae_epochs": 10,
     "test_fraction": 0.1,
     "device": "cuda" if torch.cuda.is_available() else "cpu",
-    "use_faiss_gpu": False,
     "seed": 42
 }
 
-# Smart FAISS import with GPU fallback
+# CPU-only FAISS import
 try:
     import faiss
-    from faiss import StandardGpuResources, index_cpu_to_gpu, index_gpu_to_cpu
-    GPU_FAISS_AVAILABLE = CONFIG["use_faiss_gpu"]
-    if GPU_FAISS_AVAILABLE:
-        print("🚀 GPU-accelerated FAISS functions loaded!")
-    else:
-        print("💻 Using CPU-only FAISS (fallback).")
+    print("💻 Using CPU-only FAISS.")
 except ModuleNotFoundError:
     raise ModuleNotFoundError("FAISS library not found. Please install via: `pip install faiss-cpu`")
 
@@ -70,17 +67,14 @@ class VectorQuantizer(nn.Module):
 
     def forward(self, z):
         flat_z = z.view(-1, self.embedding_dim)
-        # Compute distances
         dists = (flat_z.pow(2).sum(1, keepdim=True)
                  - 2 * flat_z @ self.embedding.weight.t()
                  + self.embedding.weight.pow(2).sum(1))
         indices = torch.argmin(dists, dim=1)
         quantized = self.embedding(indices).view_as(z)
-        # Losses
         e_loss = torch.mean((quantized.detach() - z).pow(2))
         q_loss = torch.mean((quantized - z.detach()).pow(2))
         loss = q_loss + self.commitment_cost * e_loss
-        # Straight-through
         quantized = z + (quantized - z).detach()
         return quantized, loss
 
@@ -116,7 +110,7 @@ def main():
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(SEED)
 
-    print("\n🎪 Starting Enhanced Semantic Compression Pipeline with Reconstruction Export 🎪\n")
+    print("\n🎪 Starting Enhanced Semantic Compression Pipeline (CPU-only FAISS) 🎪\n")
 
     # Load & sample text
     ds = load_dataset("wikitext", "wikitext-2-raw-v1", split=CONFIG["dataset_split"])
@@ -128,9 +122,7 @@ def main():
 
     # Generate embeddings
     sbert = SentenceTransformer("all-MiniLM-L6-v2", device=CONFIG["device"])
-    embs = sbert.encode(corpus,
-                        batch_size=CONFIG["batch_size"],
-                        show_progress_bar=True)
+    embs = sbert.encode(corpus, batch_size=CONFIG["batch_size"], show_progress_bar=True)
     embs = torch.from_numpy(np.array(embs)).float()
     print(f"✅ Embeddings: {embs.shape}\n")
 
@@ -140,8 +132,8 @@ def main():
     )
     print(f"✅ Train/Test split: {len(train_embs)}/{len(test_embs)}\n")
 
-    # FAISS OPQ+PQ
-    print("🔍 Training FAISS OPQ+PQ index...")
+    # FAISS OPQ+PQ (CPU-only)
+    print("🔍 Training FAISS OPQ+PQ index (CPU)…")
     all_np = embs.numpy().astype("float32")
     d = all_np.shape[1]
     cpu_index = faiss.IndexPreTransform(
@@ -150,13 +142,7 @@ def main():
     )
     cpu_index.train(all_np)
     cpu_index.add(all_np)
-    if CONFIG["use_faiss_gpu"] and GPU_FAISS_AVAILABLE:
-        res = StandardGpuResources()
-        gpu_index = index_cpu_to_gpu(res, 0, cpu_index)
-        index = gpu_index
-    else:
-        print("💻 Using CPU-only FAISS indexing.")
-        index = cpu_index
+    index = cpu_index
     print("✅ FAISS index ready!\n")
 
     # Build & train VQ-VAE
@@ -165,11 +151,9 @@ def main():
                   CONFIG["vqvae_embedding_dim"],
                   CONFIG["vqvae_num_embeddings"]).to(CONFIG["device"])
     optimizer = optim.Adam(vqvae.parameters(), lr=CONFIG["vqvae_learning_rate"])
-    loader = DataLoader(TextDataset(train_embs),
-                        batch_size=CONFIG["batch_size"],
-                        shuffle=True)
+    loader = DataLoader(TextDataset(train_embs), batch_size=CONFIG["batch_size"], shuffle=True)
 
-    print(f"🎯 Training VQ-VAE on {CONFIG['device']} for {CONFIG['vqvae_epochs']} epochs...\n")
+    print(f"🎯 Training VQ-VAE on {CONFIG['device']} for {CONFIG['vqvae_epochs']} epochs…\n")
     epoch_losses = []
     for epoch in range(CONFIG["vqvae_epochs"]):
         total = 0.0
@@ -193,11 +177,10 @@ def main():
     print(f"\n✅ Test reconstruction MSE: {mse:.6f}")
     print(f"🎯 Semantic fidelity: {(1-mse)*100:.2f}%\n")
 
-    # Save loss curve
+    # Save loss curve & artifacts
     os.makedirs("artifacts", exist_ok=True)
     plt.figure(figsize=(8,5))
-    plt.plot(range(1, CONFIG["vqvae_epochs"]+1), epoch_losses,
-             marker="o", linewidth=2, markersize=5)
+    plt.plot(range(1, CONFIG["vqvae_epochs"]+1), epoch_losses, marker="o", linewidth=2, markersize=5)
     plt.xlabel("Epoch")
     plt.ylabel("Average Loss")
     plt.title("VQ-VAE Training Progress")
@@ -207,18 +190,14 @@ def main():
     plt.close()
     print("✅ Saved loss curve to artifacts/loss_curve.png\n")
 
-    # Export artifacts
     print("💾 Exporting reconstruction test data…")
-    # sample latents
     with torch.no_grad():
         sample_latents = vqvae.encoder(test_embs.to(CONFIG["device"]))
     torch.save(sample_latents.cpu(), "artifacts/sample_latents.pt")
-    # originals
     torch.save(embs, "artifacts/original_embeddings.pt")
     with open("artifacts/original_sentences.txt", "w", encoding="utf-8") as f:
         for s in corpus:
             f.write(s.replace("\n", " ") + "\n")
-    # config for downstream
     cfg_export = {
         "embedding_dimension": d,
         "vqvae_hidden_dim": CONFIG["vqvae_hidden_dim"],
@@ -227,14 +206,8 @@ def main():
     }
     with open("artifacts/vqvae_config.json", "w") as f:
         json.dump(cfg_export, f, indent=2)
-    # FAISS & model
-    if CONFIG["use_faiss_gpu"] and GPU_FAISS_AVAILABLE:
-        cpu_back = index_gpu_to_cpu(index)
-        faiss.write_index(cpu_back, "artifacts/pq_opq.index")
-    else:
-        faiss.write_index(index, "artifacts/pq_opq.index")
+    faiss.write_index(index, "artifacts/pq_opq.index")
     torch.save(vqvae.state_dict(), "artifacts/vqvae.pt")
-    # metrics CSV
     pd.DataFrame([{"test_mse": mse}]).to_csv("artifacts/evaluation_metrics.csv", index=False)
     print("✅ All artifacts exported to ./artifacts\n")
 
