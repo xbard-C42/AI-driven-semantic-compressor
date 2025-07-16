@@ -1,0 +1,11 @@
+Reconstruction Test Data Info
+==============================
+Generated: 100 samples from test set
+Original embedding dimension: 384
+Compressed dimension: 64
+VQ-VAE codebook size: 512
+Final training MSE: 0.002367
+Files created:
+  - sample_latents.pt (compressed representations)
+  - original_embeddings.pt (original embeddings for similarity)
+  - original_sentences.txt (original sentences for comparison)
