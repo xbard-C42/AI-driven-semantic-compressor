@@ -1,4 +1,3 @@
-````markdown
 <div align="center">
 
 # 🔬 Semantic Compression VQ‑VAE Pipeline
@@ -136,6 +135,6 @@ Got ideas to push this further? PRs, issues and wild experiments are welcome!
 **💡 “Compress the essence, reconstruct the meaning.”**
 
 </div>
-```
+
 
 
