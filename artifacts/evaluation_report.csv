@@ -1,0 +1,4 @@
+Model,CosineSim,BERTScore_F1,BLEU
+openai,0.0493,0.8298,0.0025
+claude,0.0383,0.8294,0.0029
+gemini,0.0403,0.8335,0.0027
