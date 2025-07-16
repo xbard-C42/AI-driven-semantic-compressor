@@ -139,3 +139,4 @@ Got ideas to push this further? PRs, issues and wild experiments are welcome!
 
 
 
+There are still some small bugs, 'shhh, not a doctor'! ;) Good enough to get you there though I hope. I may or may not come back to it at all.
