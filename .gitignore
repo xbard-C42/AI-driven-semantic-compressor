@@ -1,1 +1,14 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+
+# Artifacts
+artifacts/
+
+# Environment
+.env
+venv/
+
+# OS
+.DS_Store
 
