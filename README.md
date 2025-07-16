@@ -1,3 +1,4 @@
+````markdown
 <div align="center">
 
 # 🔬 Semantic Compression VQ‑VAE Pipeline
@@ -42,7 +43,7 @@ This pipeline unites discrete VQ‑VAE codebooks with FAISS OPQ+PQ indexing and 
    **Visuals:** `artifacts/evaluation_radar_plot.png`
 
 4. 📡 **llm_callers.py**  
-Unified wrappers for each model’s API—just set your `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` or `GOOGLE_API_KEY`.
+   Unified wrappers for each model’s API—just set your `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` or `GOOGLE_API_KEY`.
 
 ---
 
@@ -50,8 +51,8 @@ Unified wrappers for each model’s API—just set your `OPENAI_API_KEY`, `ANTHR
 
 ```bash
 # 1. Clone & config
-git clone https://github.com/you/semantic-compression-vqvae.git
-cd semantic-compression-vqvae
+git clone https://github.com/xbard-C42/AI-driven-semantic-compressor-VQ-VAE-Pipeline.git
+cd AI-driven-semantic-compressor-VQ-VAE-Pipeline
 
 # 2. Create vqvae_config.json
 cat > vqvae_config.json << 'EOF'
@@ -85,7 +86,7 @@ python evaluate.py     # ▶️ metrics & radar plot
 ## 🗂️ Repo Structure
 
 ```
-semantic-compression-vqvae/
+AI-driven-semantic-compressor-VQ-VAE-Pipeline/
 ├── pipeline.py
 ├── decode.py
 ├── evaluate.py
@@ -126,7 +127,7 @@ semantic-compression-vqvae/
 ## 🤝 Contribute & Collaborate
 
 Got ideas to push this further? PRs, issues and wild experiments are welcome!
-🔗 [GitHub Issues](https://github.com/you/semantic-compression-vqvae/issues)
+🔗 [GitHub Issues](https://github.com/xbard-C42/AI-driven-semantic-compressor-VQ-VAE-Pipeline/issues)
 📬 [research@42.community](mailto:research@42.community)
 
 ---
@@ -136,8 +137,7 @@ Got ideas to push this further? PRs, issues and wild experiments are welcome!
 **💡 “Compress the essence, reconstruct the meaning.”**
 
 </div>
-
-
+```
 
 
 
