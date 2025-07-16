@@ -1,0 +1,14 @@
+# requirements.txt
+torch
+numpy
+faiss-cpu
+datasets
+sentence-transformers
+scikit-learn
+pandas
+nltk
+bert-score
+matplotlib
+openai
+anthropic
+google-generativeai
