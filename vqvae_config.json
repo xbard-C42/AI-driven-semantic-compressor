@@ -1,0 +1,6 @@
+{
+  "embedding_dimension": 384,
+  "vqvae_hidden_dim": 128,
+  "vqvae_embedding_dim": 64,
+  "vqvae_num_embeddings": 512
+}
