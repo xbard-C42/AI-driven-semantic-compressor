@@ -126,7 +126,7 @@ semantic-compression-vqvae/
 
 Got ideas to push this further? PRs, issues and wild experiments are welcome!
 🔗 [GitHub Issues](https://github.com/you/semantic-compression-vqvae/issues)
-📬 [research@yourdomain.com](mailto:research@42.community)
+📬 [research@42.community](mailto:research@42.community)
 
 ---
 
