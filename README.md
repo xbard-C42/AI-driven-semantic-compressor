@@ -2,7 +2,7 @@
 
 # 🔬 Semantic Compression VQ‑VAE Pipeline
 
-<div align="center">
+<div align="left">
 
 ![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=F07178&center=true&vCenter=true&width=900&lines=Compressing+Meaning+Not+Just+Data;Quantize+↔️+Reconstruct+via+LLMs;Revolutionizing+Semantic+Storage+%26+Retrieval)
 
