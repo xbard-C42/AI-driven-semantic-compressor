@@ -37,4 +37,3 @@ def call_gemini(vec):
     prompt = f"Reconstruct a coherent English sentence from this embedding: {vec}"
     res = model.generate_content(prompt)
     return getattr(res, "text", "").strip()
-
