@@ -1,8 +1,9 @@
+````markdown
 <div align="center">
 
 # 🔬 Semantic Compression VQ‑VAE Pipeline
 
-<div align="centre">
+<div align="center">
 
 ![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=F07178&center=true&vCenter=true&width=900&lines=Compressing+Meaning+Not+Just+Data;Quantize+↔️+Reconstruct+via+LLMs;Revolutionizing+Semantic+Storage+%26+Retrieval)
 
@@ -26,24 +27,22 @@ This pipeline unites discrete VQ‑VAE codebooks with FAISS OPQ+PQ indexing and 
 
 ## ⚙️ Core Components
 
-### 1. 📊 **pipeline.py**  
-- **Input**: Raw text (Wikitext‑2) → SBERT embeddings  
-- **Compression**: FAISS OPQ+PQ → VQ‑VAE discrete latents  
-- **Output**: `artifacts/sample_latents.pt`, model checkpoints & metadata  
+1. 📊 **pipeline.py**  
+   **Input:** Raw text (Wikitext‑2) → SBERT embeddings  
+   **Compression:** FAISS OPQ+PQ → VQ‑VAE discrete latents  
+   **Output:** `artifacts/sample_latents.pt`, model checkpoints & metadata
 
-### 2. 🤖 **decode.py**  
-- **Load**: Quantized latents & config  
-- **Reconstruct**:  
-  - 🔍 Cosine‑similarity fallback  
-  - 💬 LLM backends: GPT‑4O, Claude‑2, Gemini‑1.5‑Flash  
-- **Output**: Human‑readable sentences  
+2. 🤖 **decode.py**  
+   **Load:** Quantized latents & config  
+   **Reconstruct:** Cosine‑similarity fallback or LLMs (GPT‑4O, Claude‑2, Gemini‑1.5‑Flash)  
+   **Output:** Human‑readable sentences
 
-### 3. 📈 **evaluate.py**  
-- **Metrics**: Cosine‑similarity, BERTScore, BLEU  
-- **Report**: CSV, HTML & radar plot  
-- **Visuals**: `artifacts/evaluation_radar_plot.png`
+3. 📈 **evaluate.py**  
+   **Metrics:** Cosine‑similarity, BERTScore, BLEU  
+   **Report:** CSV, HTML & radar plot  
+   **Visuals:** `artifacts/evaluation_radar_plot.png`
 
-### 4. 📡 **llm_callers.py**  
+4. 📡 **llm_callers.py**  
 Unified wrappers for each model’s API—just set your `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` or `GOOGLE_API_KEY`.
 
 ---
@@ -79,3 +78,64 @@ pip install -r requirements.txt
 python pipeline.py     # ▶️ train & save latents
 python decode.py       # ▶️ reconstruct with similarity/LLMs
 python evaluate.py     # ▶️ metrics & radar plot
+````
+
+---
+
+## 🗂️ Repo Structure
+
+```
+semantic-compression-vqvae/
+├── pipeline.py
+├── decode.py
+├── evaluate.py
+├── llm_callers.py
+├── requirements.txt
+├── .gitignore
+├── README.md
+├── vqvae_config.json
+└── artifacts/           # ✓ embeddings, checkpoints, reports, plots
+```
+
+---
+
+## 🛠️ Tech Stack & Dependencies
+
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge\&logo=pytorch\&logoColor=white)
+![FAISS](https://img.shields.io/badge/FAISS-0099FF?style=for-the-badge)
+![Sentence‑Transformers](https://img.shields.io/badge/SentenceTransformers-2C2C2C?style=for-the-badge)
+![OpenAI](https://img.shields.io/badge/OpenAI-000000?style=for-the-badge\&logo=openai\&logoColor=white)
+![Anthropic](https://img.shields.io/badge/Anthropic-1F1F1F?style=for-the-badge)
+![Google‑GenAI](https://img.shields.io/badge/GoogleGenAI-4285F4?style=for-the-badge)
+
+</div>
+
+---
+
+## 📚 Further Reading
+
+* 📖 **“Neural Discrete Representation Learning”** (Oord et al., 2017)
+* 📖 **T5VQVAE: Bridging Token VAEs**
+* 🧠 **Semantic Embedding Indexing with FAISS**
+
+---
+
+## 🤝 Contribute & Collaborate
+
+Got ideas to push this further? PRs, issues and wild experiments are welcome!
+🔗 [GitHub Issues](https://github.com/you/semantic-compression-vqvae/issues)
+📬 [research@yourdomain.com](mailto:research@yourdomain.com)
+
+---
+
+<div align="center">
+
+**💡 “Compress the essence, reconstruct the meaning.”**
+
+</div>
+```
+
+
