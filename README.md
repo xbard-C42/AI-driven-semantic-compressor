@@ -1,4 +1,3 @@
-````markdown
 <div align="center">
 
 # 🔬 Semantic Compression VQ‑VAE Pipeline
@@ -79,65 +78,8 @@ pip install -r requirements.txt
 python pipeline.py     # ▶️ train & save latents
 python decode.py       # ▶️ reconstruct with similarity/LLMs
 python evaluate.py     # ▶️ metrics & radar plot
-````
 
----
 
-## 🗂️ Repo Structure
-
-```
-AI-driven-semantic-compressor-VQ-VAE-Pipeline/
-├── pipeline.py
-├── decode.py
-├── evaluate.py
-├── llm_callers.py
-├── requirements.txt
-├── .gitignore
-├── README.md
-├── vqvae_config.json
-└── artifacts/           # ✓ embeddings, checkpoints, reports, plots
-```
-
----
-
-## 🛠️ Tech Stack & Dependencies
-
-<div align="center">
-
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge\&logo=pytorch\&logoColor=white)
-![FAISS](https://img.shields.io/badge/FAISS-0099FF?style=for-the-badge)
-![Sentence‑Transformers](https://img.shields.io/badge/SentenceTransformers-2C2C2C?style=for-the-badge)
-![OpenAI](https://img.shields.io/badge/OpenAI-000000?style=for-the-badge\&logo=openai\&logoColor=white)
-![Anthropic](https://img.shields.io/badge/Anthropic-1F1F1F?style=for-the-badge)
-![Google‑GenAI](https://img.shields.io/badge/GoogleGenAI-4285F4?style=for-the-badge)
-
-</div>
-
----
-
-## 📚 Further Reading
-
-* 📖 **“Neural Discrete Representation Learning”** (Oord et al., 2017)
-* 📖 **T5VQVAE: Bridging Token VAEs**
-* 🧠 **Semantic Embedding Indexing with FAISS**
-
----
-
-## 🤝 Contribute & Collaborate
-
-Got ideas to push this further? PRs, issues and wild experiments are welcome!
-🔗 [GitHub Issues](https://github.com/xbard-C42/AI-driven-semantic-compressor-VQ-VAE-Pipeline/issues)
-📬 [research@42.community](mailto:research@42.community)
-
----
-
-<div align="center">
-
-**💡 “Compress the essence, reconstruct the meaning.”**
-
-</div>
-```
 
 
 
