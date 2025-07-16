@@ -21,3 +21,6 @@ Train a VQ-VAE on sentence embeddings, decode quantized latents via LLMs, and co
      "vqvae_learning_rate": 1e-3,
      "vqvae_epochs": 10
    }
+
+
+May still be buggy, I'm VERY tired. Have at it tho, it's so close as to be workable.
