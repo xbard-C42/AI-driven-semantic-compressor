@@ -1,55 +1,51 @@
 # decode.py
 import os
+import json
 import torch
-import numpy as np
 from sentence_transformers import SentenceTransformer
+from semantic_compression_opq_vqvae_pipeline import VQVAE
+from llm_callers import call_openai, call_claude, call_gemini
 
-from pipeline import VQVAE, load_config
+ARTIFACT_DIR = "artifacts"
+LATENT_PATH = os.path.join(ARTIFACT_DIR, "sample_latents.pt")
+CONFIG_PATH = os.path.join(ARTIFACT_DIR, "vqvae_config.json")
 
-# Prepare
-os.makedirs("artifacts", exist_ok=True)
+if not os.path.exists(LATENT_PATH):
+    raise FileNotFoundError("Run pipeline first to generate sample_latents.pt")
 
-# Load compressed latents
-latent_path = "artifacts/sample_latents.pt"
-if not os.path.exists(latent_path):
-    raise FileNotFoundError(f"Missing file: {latent_path}. Run pipeline.py first.")
-compressed_vectors = torch.load(latent_path)
+# Load config
+with open(CONFIG_PATH, "r") as f:
+    cfg = json.load(f)
 
-# Load originals (for similarity fallback)
-try:
-    original_embeddings = torch.load("artifacts/original_embeddings.pt")
-    with open("artifacts/original_sentences.txt", "r", encoding="utf-8") as f:
-        original_sentences = [l.strip() for l in f]
-except Exception as e:
-    print(f"⚠️ Warning: Failed to load originals: {e}")
-    original_embeddings = None
-    original_sentences = None
+# Load latents
+compressed = torch.load(LATENT_PATH)
 
-# Load VQ‑VAE
-cfg = load_config("vqvae_config.json")
-dim = compressed_vectors.shape[1]
+# Instantiate VQ-VAE decoder
 vqvae = VQVAE(
-    input_dim=dim,
+    input_dim=cfg["embedding_dimension"],
     hidden_dim=cfg["vqvae_hidden_dim"],
     embedding_dim=cfg["vqvae_embedding_dim"],
     num_embeddings=cfg["vqvae_num_embeddings"]
 )
-vqvae.load_state_dict(torch.load("artifacts/vqvae.pt", map_location="cpu"))
+vqvae.load_state_dict(torch.load(os.path.join(ARTIFACT_DIR, "vqvae.pt"),
+                                 map_location="cpu"))
 vqvae.eval()
 
-# Decode back to embedding space
-with torch.no_grad():
-    decoded_vectors = vqvae.decoder(compressed_vectors)
-    torch.save(decoded_vectors, "artifacts/decoded_vectors.pt")
+# Load originals for fallback
+try:
+    originals = torch.load(os.path.join(ARTIFACT_DIR, "original_embeddings.pt"))
+    with open(os.path.join(ARTIFACT_DIR, "original_sentences.txt"), "r", encoding="utf-8") as f:
+        sentences = [l.strip() for l in f]
+except:
+    originals, sentences = None, None
 
-# Similarity Fallback
-def similarity_match(decoded_vec, originals, sentences):
-    sims = torch.nn.functional.cosine_similarity(decoded_vec.unsqueeze(0), originals)
+sbert = SentenceTransformer("all-MiniLM-L6-v2")
+
+def similarity_match(vec):
+    sims = torch.nn.functional.cosine_similarity(vec.unsqueeze(0), originals)
     idx = int(torch.argmax(sims))
-    return sentences[idx], float(sims[idx])
+    return sentences[idx]
 
-# LLM Backends
-from llm_callers import call_openai, call_claude, call_gemini
 BACKEND = os.getenv("SEMANTIC_RECON_BACKEND", "openai").lower()
 CALLER = {
     "openai": call_openai,
@@ -57,16 +53,12 @@ CALLER = {
     "gemini": call_gemini
 }.get(BACKEND, call_openai)
 
-# Sentence encoder for similarity
-sbert = SentenceTransformer("all-MiniLM-L6-v2")
-
-for i, vec in enumerate(decoded_vectors[:10]):
-    try:
-        if original_embeddings is not None:
-            sent, sim = similarity_match(vec, original_embeddings, original_sentences)
-            print(f"[{i}] 🔍 Similarity match: “{sent}” (cos={sim:.3f})")
-        else:
-            sentence = CALLER(vec.tolist())
-            print(f"[{i}] 🤖 LLM Reconstruct: “{sentence}”")
-    except Exception as e:
-        print(f"[{i}] ⚠️ Error: {e}")
+for i, vec in enumerate(compressed[:10]):
+    with torch.no_grad():
+        decoded = vqvae.decoder(vec.unsqueeze(0)).squeeze(0)
+    if originals is not None:
+        sent = similarity_match(decoded)
+        print(f"[{i}] 🔍 Similarity: “{sent}”")
+    else:
+        sentence = CALLER(decoded.tolist())
+        print(f"[{i}] 🤖 LLM: “{sentence}”")
